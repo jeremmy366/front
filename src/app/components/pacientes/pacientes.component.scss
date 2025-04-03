@@ -1,0 +1,45 @@
+.pacientes-container {
+    h2 {
+        text-align: center;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+    }
+
+    table.mat-mdc-table {
+        width: 100%;
+
+        // Definir anchos de columnas
+        .mat-column-nombreCompleto {
+            width: 40%;
+        }
+
+        .mat-column-email {
+            width: 30%;
+        }
+
+        .mat-column-foto,
+        .mat-column-acciones {
+            width: 15%;
+            text-align: center;
+        }
+
+        // Alinear contenido
+        td,
+        th {
+            padding: 12px !important;
+            text-align: left;
+        }
+    }
+
+        mat-paginator,
+        .mat-mdc-table {
+    
+            .mat-mdc-paginator-range-label,
+            .mat-column-valor {
+                // Ajusta el nombre de tu columna numérica
+                text-align: right !important;
+                font-family: monospace; // Estilo profesional para números
+                color: #475569;
+            }
+        }
+}

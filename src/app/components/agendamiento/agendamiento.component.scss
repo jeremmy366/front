@@ -1,0 +1,79 @@
+// Variables globales (se pueden importar desde un archivo común)
+$primary-color: #007bff;
+$secondary-color: #ffffff;
+$text-color: #343a40;
+$transition-speed: 0.3s;
+$background-color: #f8f9fa;
+
+// Mixin para transiciones
+@mixin transition($properties...) {
+    transition: $properties $transition-speed ease;
+}
+
+// Estilos para el componente Agendamiento
+.agendamiento-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background: $background-color;
+
+    // Navegación para cambiar de vista
+    .navigation {
+        display: flex;
+        gap: 1rem;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid lighten($primary-color, 40%);
+
+        button {
+            background: transparent;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px 4px 0 0;
+            font-size: 1rem;
+            cursor: pointer;
+            color: $text-color;
+            @include transition(background-color, color);
+
+            &.active {
+                background: $primary-color;
+                color: $secondary-color;
+                border-bottom: 2px solid darken($primary-color, 10%);
+            }
+
+            &:hover:not(.active) {
+                background: lighten($primary-color, 40%);
+            }
+        }
+    }
+
+    // Área de contenido para la vista seleccionada
+    .content {
+        background: $secondary-color;
+        padding: 2rem;
+        border-radius: 8px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+}
+
+// Responsividad para pantallas pequeñas
+@media (max-width: 768px) {
+    .agendamiento-container {
+        margin: 1rem;
+        padding: 0.5rem;
+
+        .navigation {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+
+            button {
+                flex: 1 1 auto;
+                padding: 0.5rem;
+                font-size: 0.9rem;
+            }
+        }
+
+        .content {
+            padding: 1rem;
+        }
+    }
+}

@@ -1,0 +1,38 @@
+// Estilo base para todos los botones
+button[mat-raised-button],
+button[mat-stroked-button] {
+    padding: 10px 20px !important;
+    border-radius: 8px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+
+    mat-icon {
+        font-size: 18px;
+    }
+}
+
+// Botón Primario (Buscar/Nuevo)
+button[mat-raised-button] {
+    background: #3b82f6 !important;
+    color: white !important;
+    border: 2px solid #2563eb !important;
+
+    &:hover {
+        background: #2563eb !important;
+        box-shadow: 0 4px 6px rgba(59, 130, 246, 0.3) !important;
+    }
+}
+
+// Botón Secundario (Limpiar)
+button[mat-stroked-button] {
+    border: 2px solid #94a3b8 !important;
+    color: #475569 !important;
+
+    &:hover {
+        background: #f1f5f9 !important;
+        border-color: #64748b !important;
+    }
+}
