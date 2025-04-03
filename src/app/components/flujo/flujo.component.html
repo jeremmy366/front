@@ -1,0 +1,18 @@
+<div class="flujo-container">
+    <aside class="menu-lateral">
+        <button mat-button [class.active]="opcionSeleccionada === 'opcion1'" (click)="seleccionar('opcion1')">
+            Opción 1
+        </button>
+        <button mat-button [class.active]="opcionSeleccionada === 'opcion2'" (click)="seleccionar('opcion2')">
+            Opción 2
+        </button>
+        <!-- Puedes agregar más botones según sea necesario -->
+    </aside>
+    <section class="contenido">
+        <ng-container [ngSwitch]="opcionSeleccionada">
+            <div *ngSwitchCase="'opcion1'">Contenido de Opción 1</div>
+            <div *ngSwitchCase="'opcion2'">Contenido de Opción 1</div>
+            <div *ngSwitchDefault>Seleccione una opción del menú</div>
+        </ng-container>
+    </section>
+</div>

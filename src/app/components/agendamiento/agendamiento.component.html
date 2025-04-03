@@ -1,0 +1,19 @@
+<div class="agendamiento-container">
+    <!-- Navegación interna para cambiar de vista -->
+    <div class="navigation">
+        <button mat-button [class.active]="viewSelected === 'pacientes'" (click)="selectView('pacientes')">
+            Pacientes
+        </button>
+        <button mat-button [class.active]="viewSelected === 'flujo'" (click)="selectView('flujo')">
+            Flujo
+        </button>
+    </div>
+    <!-- Contenido interno según la opción seleccionada -->
+    <div class="content">
+        <ng-container [ngSwitch]="viewSelected">
+            <app-pacientes *ngSwitchCase="'pacientes'"></app-pacientes>
+            <app-flujo *ngSwitchCase="'flujo'"></app-flujo>
+            <div *ngSwitchDefault>Seleccione una opción</div>
+        </ng-container>
+    </div>
+</div>

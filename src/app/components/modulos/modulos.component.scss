@@ -1,0 +1,240 @@
+// Variables globales
+$primary-color: #007bff; // Azul primario
+$secondary-color: #6c757d; // Gris secundario
+$active-link-color: #0056b3; // Azul oscuro para enlaces activos
+$background-color: #f8f9fa; // Fondo claro
+$text-color: #343a40; // Color de texto oscuro
+$header-height: 60px; // Altura del encabezado
+
+// Estilos generales
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: $background-color;
+}
+
+// Encabezado
+app-header {
+    display: flex;
+    height: $header-height;
+    background-color: $primary-color;
+    color: white;
+    padding: 0 1rem;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+    .title {
+        font-size: 1.25rem;
+        font-weight: bold;
+    }
+
+    .user-menu {
+        display: flex;
+        align-items: center;
+
+        span {
+            margin-right: 0.5rem;
+            font-size: 0.875rem;
+        }
+
+        button {
+            padding: 0.5rem 0.75rem;
+            background-color: white;
+            color: $primary-color;
+            border: none;
+            border-radius: 4px;
+            font-size: 0.875rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+
+            &:hover {
+                background-color: darken(white, 10%);
+            }
+        }
+    }
+}
+
+// Contenedor principal
+.modules-container {
+    display: flex;
+    height: calc(100vh - $header-height);
+    overflow: hidden;
+
+    // Barra de navegación lateral
+    nav {
+        width: 200px;
+        min-width: 200px;
+        max-width: 200px;
+        background-color: white;
+        border-right: 1px solid $secondary-color;
+        padding: 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+
+        a {
+            text-decoration: none;
+            color: $text-color;
+            font-size: 1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 4px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+
+            &.active,
+            &:hover {
+                background-color: $primary-color;
+                color: white;
+            }
+        }
+    }
+
+    // Área de contenido principal
+    router-outlet {
+        flex: 1;
+        padding: 2rem;
+        overflow-y: auto;
+        width: 100%;
+    }
+}
+
+// Contenedor de agendamiento
+.agendamiento-container {
+    width: calc(100% - 200px); // Resta el ancho del menú lateral
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 1rem;
+
+    .navigation {
+        margin-bottom: 2rem;
+        display: flex;
+        gap: 1rem;
+        border-bottom: 2px solid #eee;
+
+        button {
+            padding: 0.75rem 1.5rem;
+            border-radius: 4px 4px 0 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            bottom: -2px;
+
+            &.active {
+                background-color: $primary-color;
+                color: white;
+                border-bottom: 2px solid $active-link-color;
+            }
+
+            &:hover:not(.active) {
+                background-color: rgba($primary-color, 0.1);
+                color: $primary-color;
+            }
+        }
+    }
+
+    .content {
+        width: 100%;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        padding: 2rem;
+
+        .pacientes-container {
+            h2 {
+                color: $text-color;
+                margin-bottom: 1.5rem;
+                font-size: 1.5rem;
+            }
+
+            table.mat-mdc-table {
+                width: 100%;
+                margin-bottom: 1.5rem;
+                border-collapse: collapse;
+
+                th {
+                    background-color: $background-color;
+                    color: $text-color;
+                    padding: 1rem;
+                    text-align: left;
+                }
+
+                td {
+                    padding: 0.75rem 1rem;
+                    border-bottom: 1px solid #eee;
+                }
+            }
+
+            mat-paginator.mat-mdc-paginator {
+                background: transparent;
+                margin-top: 1.5rem;
+
+                .mat-mdc-paginator-container {
+                    justify-content: center;
+                }
+            }
+        }
+    }
+}
+
+// Media Queries para diseño responsivo
+@media (max-width: 768px) {
+    .modules-container {
+        flex-direction: column;
+
+        nav {
+            width: 100%;
+            padding: 0.5rem;
+            flex-direction: row;
+            overflow-x: auto;
+        }
+
+        router-outlet {
+            padding: 1rem;
+        }
+    }
+
+    .agendamiento-container {
+        width: 100%;
+        padding: 0.5rem;
+
+        .navigation {
+            flex-wrap: wrap;
+            gap: 0.5rem;
+
+            button {
+                flex: 1 1 auto;
+                padding: 0.5rem;
+                font-size: 0.875rem;
+            }
+        }
+
+        .content {
+            padding: 1rem;
+
+            .pacientes-container {
+                h2 {
+                    font-size: 1.25rem;
+                }
+            }
+        }
+    }
+}
+
+@media (max-width: 480px) {
+    .agendamiento-container {
+        .content {
+            padding: 0.5rem;
+
+            table.mat-mdc-table {
+
+                th,
+                td {
+                    padding: 0.5rem;
+                    font-size: 0.875rem;
+                }
+            }
+        }
+    }
+}

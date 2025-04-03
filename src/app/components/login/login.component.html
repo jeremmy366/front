@@ -1,0 +1,18 @@
+<div class="login-container">
+    <h2>Iniciar Sesión</h2>
+    <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+        <div>
+            <label for="codigoUsuario">Usuario / Email:</label>
+            <input id="codigoUsuario" formControlName="codigoUsuario" type="text" />
+        </div>
+        <div>
+            <label for="clave">Contraseña:</label>
+            <input id="clave" formControlName="clave" type="password" />
+        </div>
+        <button type="submit">Ingresar</button>
+    </form>
+    <!-- Mostrar alerta en caso de error -->
+    <div *ngIf="errorMessage" class="error-alert">
+        {{ errorMessage }}
+    </div>
+</div>
