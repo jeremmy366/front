@@ -24,7 +24,6 @@ export class CajeroModalComponent {
   cajeros = [
     { id: 1, nombre: 'Cajero 1' },
     { id: 2, nombre: 'Cajero 2' },
-    // Agrega más o integra la consulta al API
   ];
 
   constructor(public dialogRef: MatDialogRef<CajeroModalComponent>) { }

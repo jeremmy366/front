@@ -59,9 +59,16 @@ export class FacturacionComponent implements OnInit {
   buscar(): void {
     const filtros = this.filtrosForm.value;
     // Validar que el rango de fecha sea obligatorio y máximo de 30 días
-    if (!filtros.fechaDesde || !filtros.fechaHasta) {
-      alert('El rango de fecha es obligatorio');
+    if ((filtros.fechaDesde && !filtros.fechaHasta) || (!filtros.fechaDesde && filtros.fechaHasta)) {
+      alert('Debe seleccionar ambas fechas del rango');
       return;
+    }
+    if (filtros.fechaDesde && filtros.fechaHasta) {
+      const diffDias = (new Date(filtros.fechaHasta).getTime() - new Date(filtros.fechaDesde).getTime()) / (1000 * 3600 * 24);
+      if (diffDias > 30) {
+        alert('El rango máximo permitido es de 30 días');
+        return;
+      }
     }
     const diffDias = (new Date(filtros.fechaHasta).getTime() - new Date(filtros.fechaDesde).getTime()) / (1000 * 3600 * 24);
     if (diffDias > 30) {
@@ -108,8 +115,13 @@ export class FacturacionComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Si se actualizó o creó, refrescar la lista
-        this.buscar();
+        const filtros = this.filtrosForm.value;
+        if (filtros.fechaDesde && filtros.fechaHasta) {
+          this.buscar();
+        } else {
+          // Si no hay fechas, puedes cargar todo o mostrar un mensaje
+          console.log("No se recargó porque no hay rango de fechas seleccionado.");
+        }
       }
     });
   }
