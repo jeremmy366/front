@@ -1,6 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { tap } from 'rxjs/operators';
+import { LoginResponse } from '../interface/login';
 
 @Injectable({
   providedIn: 'root'
@@ -12,22 +14,36 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   // Método para realizar el login
-  login(codigoUsuario: string, clave: string): Observable<any> {
-    return this.http.post(`${this.apiUrl}/login`, { codigoUsuario, clave });
+  login(codigoUsuario: string, clave: string): Observable<LoginResponse> {  // Aquí cambiamos `any` por `LoginResponse`
+    return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { codigoUsuario, clave }).pipe(
+      tap((res) => {
+        if (res.token) {
+          this.setToken(res.token); // Ahora TypeScript sabe que `res` tiene la propiedad `token`
+        }
+      })
+    );
   }
 
   // Guardar el token en localStorage
   setToken(token: string): void {
-    localStorage.setItem('token', token);
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.setItem('token', token);
+      console.log('Token guardado:', token);
+    }
   }
 
   // Obtener el token
   getToken(): string | null {
-    return localStorage.getItem('token');
+    if (typeof window !== 'undefined' && window.localStorage) {
+      return localStorage.getItem('token');
+    }
+    return null;
   }
 
   // Eliminar el token para cerrar sesión
   logout(): void {
-    localStorage.removeItem('token');
+    if (typeof window !== 'undefined' && window.localStorage) {
+      localStorage.removeItem('token');
+    }
   }
 }
