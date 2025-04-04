@@ -10,6 +10,26 @@ $header-height: 60px;
   transition: $properties $transition-speed ease;
 }
 
+// Usando la variable $primary-color para el color del fondo del botón
+.pacientes-container button.mat-raised-button[color="primary"]:not(.mat-button-toggle-group) {
+  background-color: $primary-color;
+  color: $secondary-color;
+  font-size: 1rem;
+  padding: 10px 20px;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+  &:hover {
+    background-color: lighten($primary-color, 10%);
+    /* Hace el color un poco más claro al pasar el mouse */
+  }
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 5px 2px rgba(0, 123, 255, 0.5);
+  }
+}
+
 // Estilos para el layout de módulos sin menú lateral
 .modules-container {
   display: flex;

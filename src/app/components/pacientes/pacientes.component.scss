@@ -8,7 +8,6 @@
     table.mat-mdc-table {
         width: 100%;
 
-        // Definir anchos de columnas
         .mat-column-nombreCompleto {
             width: 40%;
         }
@@ -23,7 +22,6 @@
             text-align: center;
         }
 
-        // Alinear contenido
         td,
         th {
             padding: 12px !important;
@@ -31,15 +29,33 @@
         }
     }
 
-        mat-paginator,
-        .mat-mdc-table {
-    
-            .mat-mdc-paginator-range-label,
-            .mat-column-valor {
-                // Ajusta el nombre de tu columna numérica
-                text-align: right !important;
-                font-family: monospace; // Estilo profesional para números
-                color: #475569;
-            }
+    // Aplicando estilos al botón "Agregar Paciente"
+    .pacientes-container button.mat-raised-button[color="primary"]:not(.mat-button-toggle-group) {
+        background-color: #4CAF50;
+        color: white;
+        font-size: 1rem;
+        padding: 10px 20px;
+        border-radius: 5px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+
+        &:hover {
+            background-color: #45a049;
         }
+
+        &:focus {
+            outline: none;
+            box-shadow: 0 0 5px 2px rgba(0, 123, 255, 0.5);
+        }
+    }
+
+    mat-paginator,
+    .mat-mdc-table {
+
+        .mat-mdc-paginator-range-label,
+        .mat-column-valor {
+            text-align: right !important;
+            font-family: monospace;
+            color: #475569;
+        }
+    }
 }

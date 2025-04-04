@@ -14,11 +14,11 @@ export class AuthService {
   constructor(private http: HttpClient) { }
 
   // Método para realizar el login
-  login(codigoUsuario: string, clave: string): Observable<LoginResponse> {  // Aquí cambiamos `any` por `LoginResponse`
+  login(codigoUsuario: string, clave: string): Observable<LoginResponse> {
     return this.http.post<LoginResponse>(`${this.apiUrl}/login`, { codigoUsuario, clave }).pipe(
       tap((res) => {
         if (res.token) {
-          this.setToken(res.token); // Ahora TypeScript sabe que `res` tiene la propiedad `token`
+          this.setToken(res.token);
         }
       })
     );
