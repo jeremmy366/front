@@ -1,7 +1,8 @@
 <div class="facturacion-container">
     <h2>Módulo de Facturación</h2>
 
-    <div class="filtros">
+    <!-- Envolvemos los filtros en un form con [formGroup] -->
+    <form [formGroup]="filtrosForm" class="filtros">
         <mat-form-field appearance="fill">
             <mat-label>Código Epago</mat-label>
             <input matInput placeholder="Ingrese código" formControlName="codigoEpago" />
@@ -28,19 +29,21 @@
         <button mat-stroked-button color="warn" (click)="limpiarFiltros()">
             <mat-icon>clear</mat-icon> Limpiar
         </button>
-
         <button mat-raised-button color="accent" (click)="openTransaccionModal()">Nuevo</button>
-    </div>
+    </form>
 
+    <!-- Tabla de transacciones -->
     <table mat-table [dataSource]="transacciones" class="mat-elevation-z8">
         <ng-container matColumnDef="codigoEpago">
             <th mat-header-cell *matHeaderCellDef>Código Epago</th>
             <td mat-cell *matCellDef="let element">{{ element.codigoEpago }}</td>
         </ng-container>
+
         <ng-container matColumnDef="valor">
             <th mat-header-cell *matHeaderCellDef>Valor</th>
             <td mat-cell *matCellDef="let element">{{ element.valor }}</td>
         </ng-container>
+
         <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef>Acciones</th>
             <td mat-cell *matCellDef="let element">

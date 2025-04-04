@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
 export interface Transaccion {
@@ -17,8 +17,12 @@ export class FacturacionService {
 
     // Método para obtener transacciones con filtros
     getTransacciones(filters: any): Observable<Transaccion[]> {
-        // Se puede enviar filters como query params. Ejemplo:
-        return this.http.get<Transaccion[]>(`${this.apiUrl}/transacciones`, { params: filters });
+        const params = new HttpParams()
+            .set('fechaDesde', filters.fechaDesde || '')
+            .set('fechaHasta', filters.fechaHasta || '')
+            .set('codigoEpago', filters.codigoEpago || '')
+            .set('cajeroId', filters.cajeroId || '');
+        return this.http.get<Transaccion[]>(this.apiUrl, { params });
     }
 
     // Métodos para crear, actualizar y eliminar transacciones
