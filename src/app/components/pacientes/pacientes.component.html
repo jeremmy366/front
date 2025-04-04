@@ -1,13 +1,20 @@
 <div class="pacientes-container">
     <h2>Pacientes</h2>
     <table mat-table [dataSource]="pacientes">
-        <!-- Columnas de paciente -->
-        <ng-container matColumnDef="nombre">
+        <!-- Columna Nombre Completo -->
+        <ng-container matColumnDef="nombre_completo">
             <th mat-header-cell *matHeaderCellDef>Nombre</th>
-            <td mat-cell *matCellDef="let paciente">{{ paciente.nombreCompleto }}</td>
+            <td mat-cell *matCellDef="let paciente">{{ paciente.nombre_completo }}</td>
         </ng-container>
-        <!-- Columna para foto -->
-        <ng-container matColumnDef="foto">
+
+        <!-- Columna Email -->
+        <ng-container matColumnDef="email">
+            <th mat-header-cell *matHeaderCellDef>Email</th>
+            <td mat-cell *matCellDef="let paciente">{{ paciente.email }}</td>
+        </ng-container>
+
+        <!-- Columna Foto -->
+        <ng-container matColumnDef="ruta_foto">
             <th mat-header-cell *matHeaderCellDef>Foto</th>
             <td mat-cell *matCellDef="let paciente">
                 <button mat-icon-button (click)="abrirFoto(paciente)">
@@ -15,10 +22,25 @@
                 </button>
             </td>
         </ng-container>
-        <!-- Otras columnas y acciones -->
+
+        <!-- Columna Acciones -->
+        <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let paciente">
+                <button mat-icon-button (click)="editarPaciente(paciente)">
+                    <mat-icon>edit</mat-icon>
+                </button>
+                <button mat-icon-button (click)="eliminarPaciente(paciente.id)">
+                    <mat-icon>delete</mat-icon>
+                </button>
+            </td>
+        </ng-container>
+
+        <!-- Definición de filas -->
         <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
         <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
     </table>
+
     <mat-paginator [length]="totalPacientes" [pageSize]="pageSize" (page)="cambiarPagina($event)">
     </mat-paginator>
 </div>

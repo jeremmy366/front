@@ -8,6 +8,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-pacientes',
@@ -18,14 +19,15 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class PacientesComponent implements OnInit {
   pacientes: Paciente[] = [];
-  displayedColumns: string[] = ['nombreCompleto', 'email', 'foto', 'acciones'];
+  displayedColumns: string[] = ['nombre_completo', 'email', 'ruta_foto', 'acciones'];
   totalPacientes = 0;
   pageSize = 10;
   currentPage = 0;
 
   constructor(
     private pacientesService: PacientesService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) { }
 
   ngOnInit(): void {
@@ -39,8 +41,7 @@ export class PacientesComponent implements OnInit {
         this.totalPacientes = res.total;
       },
       error: (err) => {
-        console.error(err);
-        alert('Error al cargar pacientes');
+        this.snackBar.open('Error al cargar pacientes', 'Cerrar', { duration: 3000 });
       }
     });
   }
@@ -56,5 +57,15 @@ export class PacientesComponent implements OnInit {
       width: '400px',
       data: { paciente }
     });
+  }
+
+  editarPaciente(paciente: any) {
+    // Aquí abres un modal o navegas para editar
+    console.log('Editar:', paciente);
+  }
+
+  eliminarPaciente(id: number) {
+    // Aquí llamas a tu servicio para eliminar al paciente
+    console.log('Eliminar:', id);
   }
 }

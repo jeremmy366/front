@@ -13,6 +13,7 @@ import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-facturacion',
@@ -43,7 +44,8 @@ export class FacturacionComponent implements OnInit {
   constructor(
     private fb: FormBuilder,
     private facturacionService: FacturacionService,
-    private dialog: MatDialog
+    private dialog: MatDialog,
+    private snackBar: MatSnackBar
   ) {
     this.filtrosForm = this.fb.group({
       codigoEpago: [''],
@@ -66,7 +68,7 @@ export class FacturacionComponent implements OnInit {
     if (filtros.fechaDesde && filtros.fechaHasta) {
       const diffDias = (new Date(filtros.fechaHasta).getTime() - new Date(filtros.fechaDesde).getTime()) / (1000 * 3600 * 24);
       if (diffDias > 30) {
-        alert('El rango máximo permitido es de 30 días');
+        this.snackBar.open('El rango máximo permitido es de 30 días', 'Cerrar', { duration: 3000 });
         return;
       }
     }

@@ -12,8 +12,7 @@ export interface Transaccion {
     providedIn: 'root'
 })
 export class FacturacionService {
-    private apiUrl = 'http://localhost:3000/facturacion'; // Ajusta la URL
-
+    private apiUrl = 'http://localhost:3000/transacciones';
     constructor(private http: HttpClient) { }
 
     // Método para obtener transacciones con filtros
