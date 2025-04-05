@@ -186,10 +186,8 @@ export class FacturacionComponent implements OnInit {
   }
 
   cambiarPagina(event: any): void {
-    // Implementa la lógica de paginación si tu API lo soporta.
     this.currentPage = event.pageIndex;
     this.pageSize = event.pageSize;
-    // Podrías agregar estos parámetros a la consulta de búsqueda si tu API los maneja.
     this.buscar();
   }
 }

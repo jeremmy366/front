@@ -9,7 +9,6 @@ export interface Paciente {
     nombreCompleto: string;
     email: string;
     rutaFoto?: string;
-    // Otros campos según tu API
 }
 
 export interface PacientesResponse {

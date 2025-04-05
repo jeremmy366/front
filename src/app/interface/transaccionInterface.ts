@@ -1,13 +1,13 @@
 export interface transaccionInterface {
     codigo_epago: number;
-    fechaSolicitud: string; // La fecha viene como string, puedes convertirla a un objeto Date si es necesario
+    fechaSolicitud: string; 
     secuenciaCajero: number;
     valor: number;
-    estado: 'S' | 'N'; // Asumiendo que los valores posibles son 'S' o 'N'
-    fechaIngreso: string; // La fecha viene como string, puedes convertirla a un objeto Date si es necesario
+    estado: 'S' | 'N'; 
+    fechaIngreso: string; 
     usuario_ingresado: string;
-    fechaModificacion: string | null; // Puede ser null si no se ha modificado
-    usuarioModificacion: string | null; // Puede ser null si no se ha modificado
-    tipoPago?: string;       // Agregado para la transacción
-    referencia?: string;     // Agregado para la transacción
+    fechaModificacion: string | null; 
+    usuarioModificacion: string | null; 
+    tipoPago?: string;      
+    referencia?: string;   
 }

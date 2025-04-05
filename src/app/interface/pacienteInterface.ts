@@ -7,6 +7,6 @@ export interface pacienteInterface {
     nombreCompleto: string;
     numeroIdentificacion: string;
     email: string;
-    codigoTipoIdentificacion: string; // Agregar esta propiedad
+    codigoTipoIdentificacion: string;
     rutaFoto?: string;
 }

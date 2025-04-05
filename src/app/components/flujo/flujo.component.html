@@ -1,17 +1,185 @@
 <div class="flujo-container">
     <aside class="menu-lateral">
-        <button mat-button [class.active]="opcionSeleccionada === 'opcion1'" (click)="seleccionar('opcion1')">
-            Opción 1
+        <button mat-button [class.active]="opcionSeleccionada === 'ordenesFacturar'"
+            (click)="seleccionar('ordenesFacturar')">
+            Órdenes para Facturar
         </button>
-        <button mat-button [class.active]="opcionSeleccionada === 'opcion2'" (click)="seleccionar('opcion2')">
-            Opción 2
+        <button mat-button [class.active]="opcionSeleccionada === 'cierreCaja'" (click)="seleccionar('cierreCaja')">
+            Cierre de Caja
         </button>
-        <!-- Puedes agregar más botones según sea necesario -->
+        <button mat-button [class.active]="opcionSeleccionada === 'registroFacturas'"
+            (click)="seleccionar('registroFacturas')">
+            Registro Facturas
+        </button>
     </aside>
     <section class="contenido">
         <ng-container [ngSwitch]="opcionSeleccionada">
-            <div *ngSwitchCase="'opcion1'">Contenido de Opción 1</div>
-            <div *ngSwitchCase="'opcion2'">Contenido de Opción 2</div>
+            <div *ngSwitchCase="'ordenesFacturar'" class="ordenes-facturar">
+                <div class="header">
+                    <h2>Órdenes para Facturar Manual</h2>
+                    <div class="acciones">
+                        <button mat-raised-button color="primary" (click)="nuevaOrden()">Nueva Orden</button>
+                        <button mat-raised-button color="accent" (click)="crearOrden()"
+                            [disabled]="!ordenSeleccionada">Crear Orden</button>
+                        <button mat-raised-button color="warn" (click)="anularOrden()"
+                            [disabled]="!ordenSeleccionada">Anular Orden</button>
+                    </div>
+                </div>
+                <form [formGroup]="ordenForm" class="orden-form">
+                    <div class="form-row">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Nº de Orden</mat-label>
+                            <input matInput formControlName="numeroOrden" readonly>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Paciente</mat-label>
+                            <input matInput formControlName="paciente">
+                            <mat-icon matSuffix (click)="buscarPaciente()">search</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Estado</mat-label>
+                            <mat-select formControlName="estado">
+                                <mat-option value="activo">Activo</mat-option>
+                                <mat-option value="anulado">Anulado</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                    </div>
+                    <div class="form-row">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Fecha</mat-label>
+                            <input matInput [matDatepicker]="picker" formControlName="fecha">
+                            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                            <mat-datepicker #picker></mat-datepicker>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Tipo Orden</mat-label>
+                            <mat-select formControlName="tipoOrden">
+                                <mat-option value="normal">Normal</mat-option>
+                                <mat-option value="especial">Especial</mat-option>
+                            </mat-select>
+                        </mat-form-field>
+                        <mat-checkbox formControlName="atencionPreferencial">Atención Preferencial</mat-checkbox>
+                        <mat-checkbox formControlName="urgente">Urgente</mat-checkbox>
+                    </div>
+                    <div class="form-row">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Médico Interno</mat-label>
+                            <input matInput formControlName="medicoInterno">
+                            <mat-icon matSuffix (click)="buscarMedico('interno')">search</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Médico Externo</mat-label>
+                            <input matInput formControlName="medicoExterno">
+                            <mat-icon matSuffix (click)="buscarMedico('externo')">search</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class="form-row">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Diagnóstico Principal</mat-label>
+                            <input matInput formControlName="diagnosticoPrincipal">
+                            <mat-icon matSuffix (click)="buscarDiagnostico('principal')">search</mat-icon>
+                        </mat-form-field>
+                    </div>
+                    <div class="form-row">
+                        <mat-form-field appearance="fill">
+                            <mat-label>Diagnóstico Secundario 1</mat-label>
+                            <input matInput formControlName="diagnosticoSecundario1">
+                            <mat-icon matSuffix (click)="buscarDiagnostico('secundario1')">search</mat-icon>
+                        </mat-form-field>
+                        <mat-form-field appearance="fill">
+                            <mat-label>Diagnóstico Secundario 2</mat-label>
+                            <input matInput formControlName="diagnosticoSecundario2">
+                            <mat-icon matSuffix (click)="buscarDiagnostico('secundario2')">search</mat-icon>
+                        </mat-form-field>
+                    </div>
+                </form>
+            </div>
+            <div *ngSwitchCase="'cierreCaja'" class="cierre-caja">
+                <h2>Cierre de Caja</h2>
+                <table class="cierre-table">
+                    <thead>
+                        <tr>
+                            <th>Efectivo</th>
+                            <th>Billetes</th>
+                            <th>Monedas</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr *ngFor="let denominacion of denominaciones">
+                            <td>{{ denominacion.valor | currency:'$' }}</td>
+                            <td>
+                                <input type="number" [(ngModel)]="denominacion.billetes"
+                                    (input)="calcularTotal(denominacion)" min="0">
+                            </td>
+                            <td>
+                                <input type="number" [(ngModel)]="denominacion.monedas"
+                                    (input)="calcularTotal(denominacion)" min="0">
+                            </td>
+                            <td>{{ denominacion.total | currency:'$' }}</td>
+                        </tr>
+                        <!-- Totales -->
+                        <tr class="total-row">
+                            <td colspan="3">Total Billetes</td>
+                            <td>{{ totalBilletes | currency:'$' }}</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3">Total Monedas</td>
+                            <td>{{ totalMonedas | currency:'$' }}</td>
+                        </tr>
+                        <tr class="total-row">
+                            <td colspan="3">Total Efectivo en Cajero</td>
+                            <td>{{ totalEfectivo | currency:'$' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+                <div class="acciones">
+                    <button mat-raised-button color="primary" (click)="cerrarCaja()">Cerrar Caja</button>
+                </div>
+            </div>
+            <div *ngSwitchCase="'registroFacturas'" class="registro-facturas">
+                <form [formGroup]="facturaForm" class="factura-form">
+                    <div class="form-section">
+                        <div class="form-row">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Nº Paquete</mat-label>
+                                <input matInput formControlName="numeroPaquete">
+                            </mat-form-field>
+                        </div>
+                        <div class="form-row">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Institución Bancaria</mat-label>
+                                <input matInput formControlName="institucionBancaria">
+                            </mat-form-field>
+                        </div>
+                        <div class="form-row">
+                            <mat-form-field appearance="fill">
+                                <mat-label>Cuenta Bancaria</mat-label>
+                                <input matInput formControlName="cuentaBancaria">
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="form-section notas-section">
+                        <div class="nota">
+                            <h3>Registro de Facturas Manuales</h3>
+                            <mat-form-field appearance="fill" class="full-width">
+                                <mat-label>Último N° Factura Manual Bloq. Sigl. Disponible</mat-label>
+                                <textarea matInput formControlName="facturasManuales" rows="5"></textarea>
+                            </mat-form-field>
+                        </div>
+                        <div class="nota">
+                            <h3>Registro de Notas de Crédito Manuales</h3>
+                            <mat-form-field appearance="fill" class="full-width">
+                                <mat-label>Último N° Nota Crédito Manual del Bloq. Sigl. NC Disponible</mat-label>
+                                <textarea matInput formControlName="notasCredito" rows="5"></textarea>
+                            </mat-form-field>
+                        </div>
+                    </div>
+                    <div class="acciones">
+                        <button mat-raised-button color="primary" (click)="registrarCaso()">Registrar Caso</button>
+                    </div>
+                </form>
+            </div>
             <div *ngSwitchDefault>Seleccione una opción del menú</div>
         </ng-container>
     </section>
