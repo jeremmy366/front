@@ -14,6 +14,8 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import { HttpParams } from '@angular/common/http';
+import moment from 'moment';
 
 @Component({
   selector: 'app-facturacion',
@@ -39,6 +41,7 @@ export class FacturacionComponent implements OnInit {
   displayedColumns: string[] = ['codigoEpago', 'valor', 'acciones'];
   totalRegistros = 0;
   pageSize = 10;
+  currentPage = 1;
   filtrosSeleccionados: any = {};
 
   constructor(
@@ -55,41 +58,41 @@ export class FacturacionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    // Por ejemplo, puedes cargar registros al iniciar o esperar a la búsqueda
+    this.cargarTransaccionesIniciales();
+  }
+
+  cargarTransaccionesIniciales(): void {
+    this.facturacionService.getTransacciones(new HttpParams()).subscribe({
+      next: (res) => {
+        this.transacciones = res;
+        this.totalRegistros = res.length;
+      },
+      error: (err) => console.error(err)
+    });
   }
 
   buscar(): void {
     const filtros = this.filtrosForm.value;
-    // Validar que el rango de fecha sea obligatorio y máximo de 30 días
-    if ((filtros.fechaDesde && !filtros.fechaHasta) || (!filtros.fechaDesde && filtros.fechaHasta)) {
-      alert('Debe seleccionar ambas fechas del rango');
+
+    // Validar que ambas fechas estén presentes si se aplica filtro
+    if (!filtros.fechaDesde || !filtros.fechaHasta) {
+      this.snackBar.open('Debes seleccionar un rango de fechas', 'Cerrar', { duration: 3000 });
       return;
     }
-    if (filtros.fechaDesde && filtros.fechaHasta) {
-      const diffDias = (new Date(filtros.fechaHasta).getTime() - new Date(filtros.fechaDesde).getTime()) / (1000 * 3600 * 24);
-      if (diffDias > 30) {
-        this.snackBar.open('El rango máximo permitido es de 30 días', 'Cerrar', { duration: 3000 });
-        return;
-      }
-    }
-    const diffDias = (new Date(filtros.fechaHasta).getTime() - new Date(filtros.fechaDesde).getTime()) / (1000 * 3600 * 24);
-    if (diffDias > 30) {
-      alert('El rango máximo permitido es de 30 días');
-      return;
-    }
-    // Agregar otros filtros si se han seleccionado (por ejemplo, cajero)
-    if (this.filtrosSeleccionados.cajero) {
-      filtros.cajeroId = this.filtrosSeleccionados.cajero.id;
-    }
-    this.facturacionService.getTransacciones(filtros).subscribe({
+
+    // Convertir fechas al formato DD/MM/YYYY HH:mm:ss
+    const params = new HttpParams()
+      .set('fechaDesde', moment(filtros.fechaDesde).format('DD/MM/YYYY HH:mm:ss'))
+      .set('fechaHasta', moment(filtros.fechaHasta).format('DD/MM/YYYY HH:mm:ss'))
+      .set('page', this.currentPage.toString())
+      .set('limit', this.pageSize.toString());
+
+    this.facturacionService.getTransacciones(params).subscribe({
       next: (res) => {
         this.transacciones = res;
-        // Actualiza totalRegistros si el backend lo envía
+        this.totalRegistros = res.length;
       },
-      error: (err) => {
-        console.error(err);
-        alert('Error al cargar transacciones');
-      }
+      error: (err) => console.error(err)
     });
   }
 
