@@ -1,0 +1,42 @@
+<h2 mat-dialog-title>{{ data ? 'Editar Transacción' : 'Nueva Transacción' }}</h2>
+<form [formGroup]="transaccionForm" (ngSubmit)="onSubmit()">
+    <mat-form-field appearance="fill">
+        <mat-label>Secuencia Cajero</mat-label>
+        <mat-select formControlName="secuenciaCajero">
+            <mat-option *ngFor="let cajero of cajeroOptions" [value]="cajero">
+                {{ cajero }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Valor</mat-label>
+        <input matInput formControlName="valor" type="number" step="0.01">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Tipo de Pago</mat-label>
+        <mat-select formControlName="tipoPago">
+            <mat-option *ngFor="let tipo of tipoPagoOptions" [value]="tipo">
+                {{ tipo }}
+            </mat-option>
+        </mat-select>
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Referencia</mat-label>
+        <input matInput formControlName="referencia">
+    </mat-form-field>
+
+    <mat-form-field appearance="fill">
+        <mat-label>Fecha Solicitud</mat-label>
+        <input matInput formControlName="fechaSolicitud" readonly>
+    </mat-form-field>
+
+    <div mat-dialog-actions>
+        <button mat-button type="button" (click)="onCancel()">Cancelar</button>
+        <button mat-raised-button color="primary" type="submit" [disabled]="transaccionForm.invalid">
+            {{ data ? 'Actualizar' : 'Guardar' }}
+        </button>
+    </div>
+</form>

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { FacturacionService, Transaccion } from '../../services/facturacion.service';
+import { FacturacionService } from '../../services/facturacion.service';
 import { MatDialog } from '@angular/material/dialog';
 import { TransaccionModalComponent } from '../transaccion-modal/transaccion-modal.component';
 import { CajeroModalComponent } from '../cajero-modal/cajero-modal.component';
@@ -14,8 +14,9 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatNativeDateModule } from '@angular/material/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
+import  moment from 'moment';
 import { HttpParams } from '@angular/common/http';
-import moment from 'moment';
+import { transaccionInterface } from '../../interface/transaccionInterface';
 
 @Component({
   selector: 'app-facturacion',
@@ -37,12 +38,13 @@ import moment from 'moment';
 })
 export class FacturacionComponent implements OnInit {
   filtrosForm: FormGroup;
-  transacciones: Transaccion[] = [];
-  displayedColumns: string[] = ['codigoEpago', 'valor', 'acciones'];
+  transacciones: transaccionInterface[] = [];
+  displayedColumns: string[] = ['codigo_epago', 'fecha_solicitud', 'secuencia_cajero', 'usuario_ingresado', 'valor', 'acciones'];
   totalRegistros = 0;
   pageSize = 10;
   currentPage = 1;
-  filtrosSeleccionados: any = {};
+  // Si no se selecciona un rango de fecha, se obtienen todas las transacciones
+  buscarPorFechas: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -58,89 +60,130 @@ export class FacturacionComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.cargarTransaccionesIniciales();
+    // Al cargar el componente, obtener todas las transacciones
+    this.obtenerTransacciones();
   }
 
-  cargarTransaccionesIniciales(): void {
+  obtenerTransacciones(): void {
     this.facturacionService.getTransacciones(new HttpParams()).subscribe({
       next: (res) => {
-        this.transacciones = res;
-        this.totalRegistros = res.length;
+        this.transacciones = res.rows;
+        this.totalRegistros = res.totalRows;
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        this.snackBar.open('Error al cargar transacciones', 'Cerrar', { duration: 3000 });
+        console.error(err);
+      }
     });
   }
+
 
   buscar(): void {
     const filtros = this.filtrosForm.value;
 
-    // Validar que ambas fechas estén presentes si se aplica filtro
-    if (!filtros.fechaDesde || !filtros.fechaHasta) {
-      this.snackBar.open('Debes seleccionar un rango de fechas', 'Cerrar', { duration: 3000 });
+    // Si se quiere filtrar por fecha, ambos deben tener valor
+    if ((filtros.fechaDesde && !filtros.fechaHasta) || (!filtros.fechaDesde && filtros.fechaHasta)) {
+      this.snackBar.open('Debes seleccionar ambas fechas para filtrar', 'Cerrar', { duration: 3000 });
       return;
     }
 
-    // Convertir fechas al formato DD/MM/YYYY HH:mm:ss
-    const params = new HttpParams()
-      .set('fechaDesde', moment(filtros.fechaDesde).format('DD/MM/YYYY HH:mm:ss'))
-      .set('fechaHasta', moment(filtros.fechaHasta).format('DD/MM/YYYY HH:mm:ss'))
-      .set('page', this.currentPage.toString())
-      .set('limit', this.pageSize.toString());
+    let params = new HttpParams();
+    if (filtros.fechaDesde && filtros.fechaHasta) {
+      // Convertir las fechas al formato requerido
+      const fechaDesde = moment(filtros.fechaDesde).format('DD/MM/YYYY HH:mm:ss');
+      const fechaHasta = moment(filtros.fechaHasta).format('DD/MM/YYYY HH:mm:ss');
+      params = params.set('fechaDesde', fechaDesde)
+        .set('fechaHasta', fechaHasta);
+    }
+    if (filtros.codigoEpago) {
+      params = params.set('codigoEpago', filtros.codigoEpago);
+    }
+    // Agregar otros filtros si es necesario...
 
     this.facturacionService.getTransacciones(params).subscribe({
       next: (res) => {
-        this.transacciones = res;
-        this.totalRegistros = res.length;
+        // Aquí extraemos las propiedades 'rows' y 'totalRows'
+        this.transacciones = res.rows;
+        this.totalRegistros = res.totalRows;
       },
-      error: (err) => console.error(err)
+      error: (err) => {
+        this.snackBar.open('Error al filtrar transacciones', 'Cerrar', { duration: 3000 });
+        console.error(err);
+      }
     });
   }
 
   limpiarFiltros(): void {
     this.filtrosForm.reset();
-    this.filtrosSeleccionados = {};
-    this.transacciones = [];
+    this.obtenerTransacciones();
   }
 
   openCajeroModal(): void {
-    const dialogRef = this.dialog.open(CajeroModalComponent, {
-      width: '400px'
-    });
+    const dialogRef = this.dialog.open(CajeroModalComponent, { width: '400px' });
     dialogRef.afterClosed().subscribe(selectedCajero => {
       if (selectedCajero) {
-        this.filtrosSeleccionados.cajero = selectedCajero;
+        // Puedes asignar el cajero seleccionado a un filtro
+        this.filtrosForm.patchValue({ cajeroId: selectedCajero.id });
       }
     });
   }
 
-  openTransaccionModal(transaccion?: Transaccion): void {
+  openTransaccionModal(transaccion?: transaccionInterface): void {
     const dialogRef = this.dialog.open(TransaccionModalComponent, {
       width: '600px',
       data: transaccion ? { ...transaccion } : null
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        const filtros = this.filtrosForm.value;
-        if (filtros.fechaDesde && filtros.fechaHasta) {
-          this.buscar();
+        // Si es edición, result contendrá los datos actualizados,
+        // si es creación, result es la nueva transacción a enviar.
+        // Aquí puedes llamar al método create o update según el caso.
+        // Por ejemplo, para creación:
+        if (!transaccion) {
+          this.facturacionService.createTransaccion(result).subscribe({
+            next: () => {
+              this.snackBar.open('Transacción creada', 'Cerrar', { duration: 3000 });
+              this.buscar();
+            },
+            error: (err) => {
+              this.snackBar.open('Error al crear transacción', 'Cerrar', { duration: 3000 });
+            }
+          });
         } else {
-          // Si no hay fechas, puedes cargar todo o mostrar un mensaje
-          console.log("No se recargó porque no hay rango de fechas seleccionado.");
+          // Para edición:
+          this.facturacionService.updateTransaccion(transaccion.codigoEpago, result).subscribe({
+            next: () => {
+              this.snackBar.open('Transacción actualizada', 'Cerrar', { duration: 3000 });
+              this.buscar();
+            },
+            error: (err) => {
+              this.snackBar.open('Error al actualizar transacción', 'Cerrar', { duration: 3000 });
+            }
+          });
         }
       }
     });
   }
 
-  eliminarTransaccion(transaccion: Transaccion): void {
+  eliminarTransaccion(codigoEpago: number): void {
     if (confirm('¿Desea eliminar este registro?')) {
-      this.facturacionService.deleteTransaccion(transaccion.codigoEpago).subscribe({
-        next: () => this.buscar(),
-        error: (err) => alert('Error al eliminar el registro')
+      this.facturacionService.deleteTransaccion(codigoEpago).subscribe({
+        next: () => {
+          this.snackBar.open('Transacción eliminada', 'Cerrar', { duration: 3000 });
+          this.buscar();
+        },
+        error: (err) => {
+          this.snackBar.open('Error al eliminar transacción', 'Cerrar', { duration: 3000 });
+        }
       });
     }
   }
 
   cambiarPagina(event: any): void {
-    // Implementar la lógica de paginación, por ejemplo ajustando los parámetros de la consulta
+    // Implementa la lógica de paginación si tu API lo soporta.
+    this.currentPage = event.pageIndex;
+    this.pageSize = event.pageSize;
+    // Podrías agregar estos parámetros a la consulta de búsqueda si tu API los maneja.
+    this.buscar();
   }
 }

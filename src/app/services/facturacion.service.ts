@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
+import { transaccionInterface } from '../interface/transaccionInterface';
 
-export interface Transaccion {
-    codigoEpago: number;
-    valor: number;
-    // Agrega aquí los campos que retorne la API
+export interface TransaccionesResponse {
+    rows: transaccionInterface[];
+    totalRows: number;
 }
 
 @Injectable({
@@ -13,16 +13,11 @@ export interface Transaccion {
 })
 export class FacturacionService {
     private apiUrl = 'http://localhost:3000/transacciones';
+
     constructor(private http: HttpClient) { }
 
-    // Método para obtener transacciones con filtros
-    getTransacciones(filters: any): Observable<Transaccion[]> {
-        const params = new HttpParams()
-            .set('fechaDesde', filters.fechaDesde || '')
-            .set('fechaHasta', filters.fechaHasta || '')
-            .set('codigoEpago', filters.codigoEpago || '')
-            .set('cajeroId', filters.cajeroId || '');
-        return this.http.get<Transaccion[]>(this.apiUrl, { params });
+    getTransacciones(params: HttpParams): Observable<TransaccionesResponse> {
+        return this.http.get<TransaccionesResponse>(this.apiUrl, { params });
     }
 
     // Métodos para crear, actualizar y eliminar transacciones

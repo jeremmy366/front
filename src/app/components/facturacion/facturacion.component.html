@@ -1,15 +1,12 @@
 <div class="facturacion-container">
     <h2>Módulo de Facturación</h2>
 
-    <!-- Envolvemos los filtros en un form con [formGroup] -->
+    <!-- Filtros -->
     <form [formGroup]="filtrosForm" class="filtros">
         <mat-form-field appearance="fill">
             <mat-label>Código Epago</mat-label>
             <input matInput placeholder="Ingrese código" formControlName="codigoEpago" />
         </mat-form-field>
-
-        <button mat-raised-button (click)="openCajeroModal()">Seleccionar Cajero</button>
-        <span *ngIf="filtrosSeleccionados.cajero">Cajero: {{ filtrosSeleccionados.cajero.nombre }}</span>
 
         <mat-form-field appearance="fill">
             <mat-label>Fecha Desde</mat-label>
@@ -34,9 +31,24 @@
 
     <!-- Tabla de transacciones -->
     <table mat-table [dataSource]="transacciones" class="mat-elevation-z8">
-        <ng-container matColumnDef="codigoEpago">
-            <th mat-header-cell *matHeaderCellDef>Código Epago</th>
-            <td mat-cell *matCellDef="let element">{{ element.codigoEpago }}</td>
+        <ng-container matColumnDef="codigo_epago">
+            <th mat-header-cell *matHeaderCellDef>Código ePago</th>
+            <td mat-cell *matCellDef="let element">{{ element.codigo_epago }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="fecha_solicitud">
+            <th mat-header-cell *matHeaderCellDef>Fecha Solicitud</th>
+            <td mat-cell *matCellDef="let element">{{ element.fecha_solicitud }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="secuencia_cajero">
+            <th mat-header-cell *matHeaderCellDef>Secuencia Cajero</th>
+            <td mat-cell *matCellDef="let element">{{ element.secuencia_cajero }}</td>
+        </ng-container>
+
+        <ng-container matColumnDef="usuario_ingresado">
+            <th mat-header-cell *matHeaderCellDef>Usuario Ingresado</th>
+            <td mat-cell *matCellDef="let element">{{ element.usuario_ingresado }}</td>
         </ng-container>
 
         <ng-container matColumnDef="valor">
@@ -50,7 +62,7 @@
                 <button mat-icon-button (click)="openTransaccionModal(element)">
                     <mat-icon>edit</mat-icon>
                 </button>
-                <button mat-icon-button color="warn" (click)="eliminarTransaccion(element)">
+                <button mat-icon-button color="warn" (click)="eliminarTransaccion(element.codigo_epago)">
                     <mat-icon>delete</mat-icon>
                 </button>
             </td>
