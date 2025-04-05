@@ -5,7 +5,7 @@ export interface transaccionInterface {
     valor: number;
     estado: 'S' | 'N'; // Asumiendo que los valores posibles son 'S' o 'N'
     fechaIngreso: string; // La fecha viene como string, puedes convertirla a un objeto Date si es necesario
-    usuarioIngreso: string;
+    usuario_ingresado: string;
     fechaModificacion: string | null; // Puede ser null si no se ha modificado
     usuarioModificacion: string | null; // Puede ser null si no se ha modificado
     tipoPago?: string;       // Agregado para la transacción

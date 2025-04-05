@@ -31,6 +31,7 @@ export class TransaccionModalComponent implements OnInit {
             valor: [data ? data.valor : '', [Validators.required, Validators.min(0.01)]],
             tipoPago: [data ? data.tipoPago : 'Tarjeta', Validators.required],
             referencia: [data ? data.referencia : '', Validators.required],
+            usuario_ingresado: [data ? data.usuario_ingresado : '', Validators.required],
             // La fecha de solicitud se asigna automáticamente y es de solo lectura
             fechaSolicitud: [{ value: data ? data.fechaSolicitud : new Date().toISOString(), disabled: true }, Validators.required]
         });
