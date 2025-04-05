@@ -36,7 +36,6 @@ export class PacientesComponent implements OnInit {
     this.cargarPacientes();
   }
 
-  // Método para abrir el modal de agregar paciente
   openAgregarPacienteModal(): void {
     const dialogRef = this.dialog.open(PacienteModalComponent, {
       width: '600px',
@@ -58,12 +57,11 @@ export class PacientesComponent implements OnInit {
     });
   }
 
-
   cargarPacientes(pageIndex: number = 0, pageSize: number = this.pageSize): void {
     this.pacientesService.getPacientes(pageIndex, pageSize).subscribe({
       next: (res) => {
-        this.pacientes = res.rows;         // Usar 'rows'
-        this.totalPacientes = res.totalRows; // Usar 'totalRows'
+        this.pacientes = res.rows;
+        this.totalPacientes = res.totalRows;
       },
       error: (err) => {
         this.snackBar.open('Error al cargar pacientes', 'Cerrar', { duration: 3000 });
@@ -78,23 +76,33 @@ export class PacientesComponent implements OnInit {
   }
 
   abrirFoto(paciente: Paciente): void {
-    this.dialog.open(FotoModalComponent, {
+    const dialogRef = this.dialog.open(FotoModalComponent, {
       width: '400px',
       data: { paciente }
+    });
+
+    dialogRef.afterClosed().subscribe(updatedPaciente => {
+      if (updatedPaciente) {
+        // Actualiza el paciente en la lista con la nueva ruta de la foto
+        const index = this.pacientes.findIndex(p => p.idPaciente === updatedPaciente.idPaciente);
+        if (index !== -1) {
+          this.pacientes[index] = updatedPaciente;
+          this.pacientes = [...this.pacientes]; // Forzar actualización de la tabla
+        }
+      }
     });
   }
 
   editarPaciente(paciente: pacienteInterface): void {
-    // Prepara los datos para el formulario. Asegúrate de que los nombres coincidan.
     const formData: PacienteFormData = {
-      primerNombre: paciente.primerNombre, // si tienes estos campos en tu interfaz; de lo contrario, ajusta
+      primerNombre: paciente.primerNombre,
       segundoNombre: paciente.segundoNombre,
       primerApellido: paciente.primerApellido,
       segundoApellido: paciente.segundoApellido,
       nombreCompleto: paciente.nombreCompleto,
       numeroIdentificacion: paciente.numeroIdentificacion,
       email: paciente.email,
-      codigoTipoIdentificacion: paciente.codigoTipoIdentificacion // asegúrate de tener esta propiedad en tu interfaz
+      codigoTipoIdentificacion: paciente.codigoTipoIdentificacion
     };
 
     const dialogRef = this.dialog.open(PacienteModalComponent, {
@@ -104,7 +112,6 @@ export class PacientesComponent implements OnInit {
 
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Combina los datos nuevos con el id del paciente para enviarlo al servicio
         const pacienteActualizado = { ...paciente, ...result.paciente };
         this.pacientesService.updatePaciente(paciente.idPaciente, pacienteActualizado).subscribe({
           next: () => {

@@ -43,17 +43,11 @@ export class TransaccionModalComponent implements OnInit {
 
     onSubmit(): void {
         if (this.transaccionForm.valid) {
-            const updatedTransaccion = {
-                ...this.data, // Mantiene los datos originales, incluyendo codigoEpago
-                ...this.transaccionForm.value // Sobrescribe con los valores editados
-            };
             const formValues = this.transaccionForm.getRawValue();
-
-            // Si es edición, añadimos el código de la transacción al objeto
+            // Asegúrate de incluir 'usuario_ingresado' en el objeto result
             const result = this.data?.codigo_epago
-                ? { ...formValues, codigoEpago: this.data.codigo_epago }
+                ? { ...formValues, codigo_epago: this.data.codigo_epago }
                 : formValues;
-
             this.dialogRef.close(result);
         }
     }

@@ -35,23 +35,20 @@ export class PacientesService {
         return this.http.get<PacientesResponse>(this.apiUrl, { params });
     }
 
-    // Método para actualizar un paciente (PUT)
     updatePaciente(id: number, paciente: any): Observable<any> {
         return this.http.put(`${this.apiUrl}/${id}`, paciente);
     }
 
-    // Método para eliminar un paciente (DELETE)
     deletePaciente(id: number): Observable<any> {
         return this.http.delete(`${this.apiUrl}/${id}`);
     }
 
-    // Método para crear un paciente
     createPaciente(data: any, file?: File): Observable<any> {
         const formData = new FormData();
         formData.append('primerNombre', data.primerNombre);
-        formData.append('segundoNombre', data.segundoNombre);
+        formData.append('segundoNombre', data.segundoNombre || '');
         formData.append('primerApellido', data.primerApellido);
-        formData.append('segundoApellido', data.segundoApellido);
+        formData.append('segundoApellido', data.segundoApellido || '');
         formData.append('nombreCompleto', data.nombreCompleto);
         formData.append('numeroIdentificacion', data.numeroIdentificacion);
         formData.append('email', data.email);
@@ -60,5 +57,11 @@ export class PacientesService {
             formData.append('foto', file);
         }
         return this.http.post(this.apiUrl, formData);
+    }
+
+    uploadFoto(idPaciente: number, file: File): Observable<{ message: string; rutaFoto: string }> {
+        const formData = new FormData();
+        formData.append('foto', file);
+        return this.http.post<{ message: string; rutaFoto: string }>(`${this.apiUrl}/${idPaciente}/foto`, formData);
     }
 }

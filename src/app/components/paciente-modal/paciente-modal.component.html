@@ -40,11 +40,6 @@
         <input matInput formControlName="codigoTipoIdentificacion">
     </mat-form-field>
 
-    <div>
-        <label for="file">Foto (opcional):</label>
-        <input type="file" id="file" (change)="onFileChange($event)">
-    </div>
-
     <div mat-dialog-actions>
         <button mat-button type="button" (click)="onCancel()">Cancelar</button>
         <button mat-raised-button color="primary" type="submit" [disabled]="pacienteForm.invalid">

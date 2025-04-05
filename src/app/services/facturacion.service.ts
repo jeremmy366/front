@@ -22,7 +22,10 @@ export class FacturacionService {
 
     // Métodos para crear, actualizar y eliminar transacciones
     createTransaccion(data: any): Observable<any> {
-        return this.http.post(this.apiUrl, data);
+        return this.http.post(this.apiUrl, {
+            ...data,
+            usuario_ingresado: data.usuario_ingresado,
+        });
     }
 
     updateTransaccion(id: number, data: any): Observable<any> {
