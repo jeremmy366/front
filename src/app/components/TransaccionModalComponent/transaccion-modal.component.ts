@@ -6,6 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
+import { transaccionInterface } from './../../interface/transaccionInterface';
 
 @Component({
     selector: 'app-transaccion-modal',
@@ -23,10 +24,10 @@ export class TransaccionModalComponent implements OnInit {
     constructor(
         private fb: FormBuilder,
         private dialogRef: MatDialogRef<TransaccionModalComponent>,
-        @Inject(MAT_DIALOG_DATA) public data: any  // Si se edita, se inyectan datos; para agregar, es null
+        @Inject(MAT_DIALOG_DATA) public data: transaccionInterface | null
     ) {
         this.transaccionForm = this.fb.group({
-            secuenciaCajero: [data ? data.secuencia_cajero : 1, Validators.required],
+            secuenciaCajero: [data ? data.secuenciaCajero : 1, Validators.required],
             valor: [data ? data.valor : '', [Validators.required, Validators.min(0.01)]],
             tipoPago: [data ? data.tipoPago : 'Tarjeta', Validators.required],
             referencia: [data ? data.referencia : '', Validators.required],
@@ -41,11 +42,21 @@ export class TransaccionModalComponent implements OnInit {
 
     onSubmit(): void {
         if (this.transaccionForm.valid) {
-            // Como el control de fecha está disabled, usamos getRawValue() para obtenerla
+            const updatedTransaccion = {
+                ...this.data, // Mantiene los datos originales, incluyendo codigoEpago
+                ...this.transaccionForm.value // Sobrescribe con los valores editados
+            };
             const formValues = this.transaccionForm.getRawValue();
-            this.dialogRef.close(formValues);
+
+            // Si es edición, añadimos el código de la transacción al objeto
+            const result = this.data?.codigo_epago
+                ? { ...formValues, codigoEpago: this.data.codigo_epago }
+                : formValues;
+
+            this.dialogRef.close(result);
         }
     }
+
 
     onCancel(): void {
         this.dialogRef.close();

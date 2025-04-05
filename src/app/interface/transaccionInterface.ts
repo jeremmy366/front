@@ -1,5 +1,5 @@
 export interface transaccionInterface {
-    codigoEpago: number;
+    codigo_epago: number;
     fechaSolicitud: string; // La fecha viene como string, puedes convertirla a un objeto Date si es necesario
     secuenciaCajero: number;
     valor: number;

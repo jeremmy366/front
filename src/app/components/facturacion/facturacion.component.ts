@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule } from '@angular/forms';
 import { FacturacionService } from '../../services/facturacion.service';
 import { MatDialog } from '@angular/material/dialog';
-import { TransaccionModalComponent } from '../transaccion-modal/transaccion-modal.component';
+import { TransaccionModalComponent } from '../TransaccionModalComponent/transaccion-modal.component';
 import { CajeroModalComponent } from '../cajero-modal/cajero-modal.component';
 import { CommonModule } from '@angular/common';
 import { MatTableModule } from '@angular/material/table';
@@ -67,6 +67,7 @@ export class FacturacionComponent implements OnInit {
   obtenerTransacciones(): void {
     this.facturacionService.getTransacciones(new HttpParams()).subscribe({
       next: (res) => {
+        console.log('Datos recibidos del servidor:', res.rows);
         this.transacciones = res.rows;
         this.totalRegistros = res.totalRows;
       },
@@ -129,37 +130,42 @@ export class FacturacionComponent implements OnInit {
   }
 
   openTransaccionModal(transaccion?: transaccionInterface): void {
+    console.log('Transacción a editar:', transaccion);
+    if (transaccion) {
+      console.log('codigoEpago:', transaccion.codigo_epago);
+    }
+    const codigoEpago = transaccion?.codigo_epago ?? null;
     const dialogRef = this.dialog.open(TransaccionModalComponent, {
       width: '600px',
       data: transaccion ? { ...transaccion } : null
     });
+
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        // Si es edición, result contendrá los datos actualizados,
-        // si es creación, result es la nueva transacción a enviar.
-        // Aquí puedes llamar al método create o update según el caso.
-        // Por ejemplo, para creación:
         if (!transaccion) {
+          // Caso de creación
           this.facturacionService.createTransaccion(result).subscribe({
             next: () => {
               this.snackBar.open('Transacción creada', 'Cerrar', { duration: 3000 });
               this.buscar();
             },
-            error: (err) => {
+            error: () => {
               this.snackBar.open('Error al crear transacción', 'Cerrar', { duration: 3000 });
             }
           });
-        } else {
-          // Para edición:
-          this.facturacionService.updateTransaccion(transaccion.codigoEpago, result).subscribe({
+        } else if (codigoEpago) {
+          // Caso de edición
+          this.facturacionService.updateTransaccion(codigoEpago, result).subscribe({
             next: () => {
               this.snackBar.open('Transacción actualizada', 'Cerrar', { duration: 3000 });
               this.buscar();
             },
-            error: (err) => {
+            error: () => {
               this.snackBar.open('Error al actualizar transacción', 'Cerrar', { duration: 3000 });
             }
           });
+        } else {
+          this.snackBar.open('No se pudo actualizar: código inválido', 'Cerrar', { duration: 3000 });
         }
       }
     });
